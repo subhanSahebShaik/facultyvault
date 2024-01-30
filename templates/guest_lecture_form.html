@@ -1,0 +1,269 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome {{name}}</title>
+
+    <!-- Add Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+  </head>
+  <style>
+    * {
+      font-family: "EB Garamond", serif;
+    }
+  </style>
+
+  <body>
+    <nav
+      class="navbar navbar-expand-lg navbar-light bg-dark fixed-top text-light"
+      style="color: #fff"
+    >
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#" style="color: #fff"
+          ><img
+            src="https://github.com/Vikaskoppoju/facultyvault/assets/98159254/17c0f22e-0e81-4518-9211-c3554deda60e"
+            alt=""
+            width="150rem"
+        /></a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div
+          class="collapse navbar-collapse justify-content-end"
+          id="navbarNav"
+        >
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                href="{% url 'dashboard' %}"
+                style="color: #fff"
+                >Dashboard</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'logout' %}" style="color: #fff"
+                >Logout</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="container" style="margin-top: 5rem">
+      <div>
+        <h3>Add or Update Guest Lecture's details</h3>
+      </div>
+      <div class="table-responsive">
+        <form method="post">
+          {% csrf_token %}
+          <input
+            type="number"
+            name="newRecordsCounter"
+            id="newRecordsCounter"
+            hidden
+          />
+          <table id="dataTable" class="table">
+            <!-- Add Bootstrap table class -->
+            <thead>
+              <tr>
+                <th>Academic Year</th>
+                <th>Name Of The Guest Lecture</th>
+                <th>Name Of The Host Institute</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Duration</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if guestlectures_data %} {% for record in guestlectures_data %}
+              <tr>
+                <td>
+                  <input
+                    type="text"
+                    class="form-control"
+                    value="{{record.academic_year}}"
+                    name="academic_year{{forloop.counter0}}"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    class="form-control"
+                    value="{{record.name_of_the_guest_lecture}}"
+                    name="name_of_the_guest_lecture{{forloop.counter0}}"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    class="form-control"
+                    value="{{record.name_of_the_host_institute}}"
+                    name="name_of_the_host_institute{{forloop.counter0}}"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="date"
+                    class="form-control"
+                    value="{{record.from_date|date:'Y-m-d'}}"
+                    name="from_date{{forloop.counter0}}"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="date"
+                    class="form-control"
+                    value="{{record.to_date|date:'Y-m-d'}}"
+                    name="to_date{{forloop.counter0}}"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    class="form-control"
+                    value="{{record.duration}}"
+                    name="duration{{forloop.counter0}}"
+                  />
+                </td>
+                <td>
+                  <span
+                    style="cursor: pointer; color: red"
+                    onclick="removeExistingRecord(this)"
+                    ><i class="fa-solid fa-trash-can fa-xl"></i
+                  ></span>
+                </td>
+              </tr>
+              {% endfor %} {% else %}
+              <tr>
+                <td colspan="4">
+                  No Certification data available yet! Add using below button...
+                </td>
+              </tr>
+              {% endif %}
+            </tbody>
+          </table>
+          <button
+            type="button"
+            class="btn btn-primary"
+            onclick="addAnotherRecord()"
+          >
+            Add &nbsp;<i class="fa-solid fa-plus"></i>
+          </button>
+          <input type="submit" class="btn btn-success" value="Save" />
+        </form>
+      </div>
+      <script type="text/javascript">
+        var newly_added_count = 0;
+        console.log(
+          "Total rows of a table : ",
+          document.getElementById("dataTable").getElementsByTagName("tbody")[0]
+            .rows
+        );
+
+        function updateRecordCounter() {
+          document.getElementById("newRecordsCounter").value =
+            newly_added_count;
+          console.log(document.getElementById("newRecordsCounter").value);
+        }
+
+        function addAnotherRecord() {
+          var table = document
+            .getElementById("dataTable")
+            .getElementsByTagName("tbody")[0];
+
+          var position = table.rows.length;
+          var newRecord = table.insertRow(position);
+          newly_added_count += 1;
+
+          var cell1 = newRecord.insertCell(0);
+          var cell2 = newRecord.insertCell(1);
+          var cell3 = newRecord.insertCell(2);
+          var cell4 = newRecord.insertCell(3);
+          var cell5 = newRecord.insertCell(4);
+          var cell6 = newRecord.insertCell(5);
+          var cell7 = newRecord.insertCell(6);
+
+          cell1.innerHTML = `<input type="text" class="form-control" name="new_academic_year${newly_added_count}" required />`;
+          cell2.innerHTML = `<input type="text" class="form-control" name="new_name_of_the_guest_lecture${newly_added_count}" required />`;
+          cell3.innerHTML = `<input type="text" class="form-control" name="new_name_of_the_host_institute${newly_added_count}" required />`;
+          cell4.innerHTML = `<input type="date" class="form-control" name="new_from_date${newly_added_count}" required />`;
+          cell5.innerHTML = `<input type="date" class="form-control" name="new_to_date${newly_added_count}" required />`;
+          cell6.innerHTML = `<input type="text" class="form-control" name="new_duration${newly_added_count}" required />`;
+          cell7.innerHTML = `<span style="cursor: pointer; color: red;" onclick="removeRecord()"><i class="fa-solid fa-trash-can fa-xl"></i></span>`;
+          updateRecordCounter();
+        }
+
+        function removeRecord() {
+          var position =
+            document
+              .getElementById("dataTable")
+              .getElementsByTagName("tbody")[0].rows.length - 1;
+          var table = document
+            .getElementById("dataTable")
+            .getElementsByTagName("tbody")[0];
+          table.deleteRow(position);
+          newly_added_count -= 1;
+          updateRecordCounter();
+        }
+
+        function removeExistingRecord(button) {
+          var row = button.parentNode.parentNode;
+          var position = row.rowIndex;
+          var table = document
+            .getElementById("dataTable")
+            .getElementsByTagName("tbody")[0];
+          table.deleteRow(position - 1);
+        }
+        updateRecordCounter();
+      </script>
+      <script
+        src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"
+      ></script>
+      <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"
+      ></script>
+      <script
+        src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"
+      ></script>
+      <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"
+      ></script>
+      <script
+        src="https://kit.fontawesome.com/83ce78bbab.js"
+        crossorigin="anonymous"
+      ></script>
+    </div>
+  </body>
+</html>

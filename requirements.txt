@@ -1,0 +1,10 @@
+asgiref
+Django
+sqlparse
+tzdata
+gunicorn
+xlsxwriter
+reportlab
+datetime
+pandas
+cryptography

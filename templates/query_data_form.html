@@ -1,0 +1,376 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FacultyVault</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+  </head>
+  <style>
+    * {
+      font-family: "EB Garamond", serif;
+    }
+
+    body {
+      padding-top: 50px;
+    }
+
+    .messages {
+      min-width: 100%;
+      padding-top: 20px;
+    }
+
+    .message {
+      min-width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: whitesmoke;
+    }
+
+    .warning {
+      color: orangered;
+      font-weight: bold;
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    .error {
+      color: red;
+      font-weight: bold;
+      padding: 10px;
+      border-radius: 10px;
+    }
+    .grand-total-block {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease-in-out;
+    }
+
+    .grand-total-block:hover {
+      transform: scale(1.05);
+    }
+
+    .large-number {
+      font-size: 24px; /* Adjust the font size as needed */
+      color: #3498db; /* Adjust the color as needed */
+    }
+  </style>
+
+  <body>
+    <nav
+      class="navbar navbar-expand-lg navbar-light bg-dark fixed-top text-light"
+      style="color: #fff"
+    >
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#" style="color: #fff">
+          <img
+            src="https://github.com/Vikaskoppoju/facultyvault/assets/98159254/17c0f22e-0e81-4518-9211-c3554deda60e"
+            alt=""
+            width="150rem"
+          />
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+          style="color: #fff; background-color: #fff"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div
+          class="collapse navbar-collapse justify-content-end"
+          id="navbarNav"
+        >
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'home' %}" style="color: #fff">
+                Dashboard
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'logout' %}" style="color: #fff">
+                Logout
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="messages">
+      {% for message in messages %}
+      <div class="message" data-message-id="{{ forloop.counter }}">
+        <span {% if message.tags %} class="{{ message.tags }}" {% endif %}>
+          {{ message }}
+        </span>
+        <span
+          onclick="deleteMessage({{ forloop.counter }})"
+          style="padding: 10px; cursor: pointer"
+        >
+          <i class="fa-solid fa-square-xmark"></i>
+        </span>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <div class="container mt-5">
+      <div class="container mt-5">
+        <div
+          class="d-flex flex-wrap justify-content-evenly"
+          id="grandTotalsCards"
+        >
+          <div class="p-3 text-center grand-total-block mb-4 mx-3">
+            <span class="font-weight-bold large-number"
+              >{{grand_totals.2}}</span
+            >
+            <div>Total Certifications</div>
+          </div>
+          <div class="p-3 text-center grand-total-block mb-4 mx-3">
+            <span class="font-weight-bold large-number"
+              >{{grand_totals.3}}</span
+            >
+            <div>Total Conference</div>
+          </div>
+          <div class="p-3 text-center grand-total-block mb-4 mx-3">
+            <span class="font-weight-bold large-number"
+              >{{grand_totals.4}}</span
+            >
+            <div>Total Journals</div>
+          </div>
+          <div class="p-3 text-center grand-total-block mb-4 mx-3">
+            <span class="font-weight-bold large-number"
+              >{{grand_totals.5}}</span
+            >
+            <div>Total Books</div>
+          </div>
+          <div class="p-3 text-center grand-total-block mb-4 mx-3">
+            <span class="font-weight-bold large-number"
+              >{{grand_totals.6}}</span
+            >
+            <div>Total Patents</div>
+          </div>
+          <div class="p-3 text-center grand-total-block mb-4 mx-3">
+            <span class="font-weight-bold large-number"
+              >{{grand_totals.7}}</span
+            >
+            <div>Total Guest Lectures</div>
+          </div>
+          <div class="p-3 text-center grand-total-block mb-4 mx-3">
+            <span class="font-weight-bold large-number"
+              >{{grand_totals.8}}</span
+            >
+            <div>Total FDPs</div>
+          </div>
+          <div class="p-3 text-center grand-total-block mb-4 mx-3">
+            <span class="font-weight-bold large-number"
+              >{{grand_totals.9}}</span
+            >
+            <div>Total Workshops</div>
+          </div>
+          <div class="p-3 text-center grand-total-block mb-4 mx-3">
+            <span class="font-weight-bold large-number"
+              >{{grand_totals.10}}</span
+            >
+            <div>Total Conference Chairs</div>
+          </div>
+        </div>
+      </div>
+      <div class="container mt-5">
+        <form method="post" class="text-center">
+          {% csrf_token %}
+          <div class="row">
+            <div id="multy_select_div" class="form-group col-md-6">
+              <label for="academic_years_selector"
+                >Filter By Academic Year <small style="color: red">*</small>
+              </label>
+              <select
+                name="academic_years_selector"
+                multiple
+                class="form-control"
+                id="academic_years_selector"
+              >
+                <option value="" class="text-center">
+                  ---Select Multiple Academic Years using Ctrl---
+                </option>
+                {% for year in existing_academic_years %}
+                <option value="{{year}}">{{ year }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div id="multy_select_div" class="form-group col-md-6">
+              <label for="column_names_selector"
+                >Filter By Data Columns <small style="color: red">*</small>
+              </label>
+              <select
+                name="column_names_selector"
+                multiple
+                class="form-control"
+                id="column_names_selector"
+              >
+                <option value="" class="text-center">
+                  ---Select Multiple Columns using Ctrl---
+                </option>
+                <option value="ALL">All</option>
+                <option value="COURSE_DETAILS">Course Details</option>
+                <option value="CERTIFICATION_DETAILS">
+                  Certification Details
+                </option>
+                <option value="CONFERENCE_DETAILS">
+                  Conference Publication Details
+                </option>
+                <option value="JOURNAL_DETAILS">Journal Details</option>
+                <option value="BOOK_DETAILS">Books Details</option>
+                <option value="PATENT_DETAILS">Patents Details</option>
+                <option value="GUEST_LECTURE_DETAILS">
+                  Guest Lecture Details
+                </option>
+                <option value="FDP_DETAILS">FDP Details</option>
+                <option value="WORKSHOP_DETAILS">Workshops Details</option>
+                <option value="CONFERENCE_CHAIR_DETAILS">
+                  Conference Chair Details
+                </option>
+              </select>
+            </div>
+            {% comment %}
+            <div id="multy_select_div" class="form-group col-md-4">
+              <label for="department_names_selector"
+                >Filter By Departments <small style="color: red">*</small>
+              </label>
+              <select
+                name="department_names_selector"
+                multiple
+                class="form-control"
+                id="department_names_selector"
+              >
+                <option value="" class="text-center">
+                  ---Select Multiple Branches using Ctrl---
+                </option>
+                <option value="ALL">All</option>
+                <option value="CSE">CSE</option>
+                <option value="CAI">CAI</option>
+                <option value="ECE">ECE</option>
+                <option value="EEE">EEE</option>
+                <option value="ME">ME</option>
+                <option value="CE">CE</option>
+                <option value="MBA">MBA</option>
+                <option value="BSH">BSH</option>
+              </select>
+            </div>
+            {% endcomment %}
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <input type="submit" class="btn btn-primary" value="Submit" />
+            </div>
+          </div>
+        </form>
+      </div>
+
+      {% for year, year_summary_data in academic_years_summary.items %}
+      <div class="shadow p-3 mb-5 bg-white rounded">
+        <h3 class="mt-3">{{year}} Summary</h3>
+        <div class="table-responsive">
+          <table class="table table-hover" border="1">
+            <thead>
+              <tr>
+                {% with required_columns=year_summary_data.0.1 %}
+                <th>Faculty ID</th>
+                {% if required_columns.0 %}
+                <th>Course Records</th>
+                {% endif %} {% if required_columns.1 %}
+                <th>Certifications</th>
+                {% endif %} {% if required_columns.2 %}
+                <th>Conferences</th>
+                {% endif %} {% if required_columns.3 %}
+                <th>Journals</th>
+                {% endif %} {% if required_columns.4 %}
+                <th>Books</th>
+                {% endif %} {% if required_columns.5 %}
+                <th>Patents</th>
+                {% endif %} {% if required_columns.6 %}
+                <th>Guest Lectures</th>
+                {% endif %} {% if required_columns.7 %}
+                <th>FDPs</th>
+                {% endif %} {% if required_columns.8 %}
+                <th>Workshops</th>
+                {% endif %} {% if required_columns.9 %}
+                <th>Conference Chair</th>
+                {% endif %} {% endwith %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for summary_data, required_columns in year_summary_data %} {% for record in summary_data %}
+              <tr>
+                {% for value in record %} {% if forloop.counter == 1 %}
+                <td
+                  class="{% if value %} text-primary {% else %} text-danger {% endif %}"
+                  title="{{ value.1 }}"
+                >
+                  <a href="{% url 'profile_viewer' value.0 %}" target="_blank"
+                    >{{value.0}}</a
+                  >
+                </td>
+                {% else %}
+                <td
+                  class="{% if value %} text-primary {% else %} text-danger {% endif %}"
+                >
+                  {{value}}
+                </td>
+                {% endif %} {% endfor %} {% endfor %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <script>
+      function deleteMessage(messageId) {
+        var messageElement = document.querySelector(
+          '.message[data-message-id="' + messageId + '"]'
+        );
+        if (messageElement) {
+          messageElement.remove();
+        }
+      }
+    </script>
+
+    <!-- Bootstrap JS and Popper.js scripts -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://kit.fontawesome.com/83ce78bbab.js"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

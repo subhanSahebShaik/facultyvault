@@ -1,0 +1,661 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ faculty_data.name }} - Faculty Profile</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+  <style>
+    * {
+      font-family: "EB Garamond", serif;
+    }
+
+    body {
+      padding-top: 50px;
+    }
+
+    .messages {
+      min-width: 100%;
+      padding-top: 30px;
+    }
+
+    .message {
+      min-width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: whitesmoke;
+    }
+
+    .warning {
+      color: red;
+      font-weight: bold;
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    #faculty_search::placeholder {
+      color: #888;
+      /* Set your preferred color value */
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-dark fixed-top text-light" style="color: #fff">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#" style="color: #fff">
+        <img src="https://github.com/Vikaskoppoju/facultyvault/assets/98159254/17c0f22e-0e81-4518-9211-c3554deda60e"
+          alt="" width="150rem" />
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"
+        style="color: #fff; background-color: #fff">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          {% if faculty_data.is_hod %}
+          <li class="nav-item">
+            <form class="d-flex" method="post" target="_blank">
+              {% csrf_token %}
+              <input class="form-control me-2 bg-dark" type="search" name="faculty_search" id="faculty_search"
+                style="color: #fff" placeholder="Type Faculty ID and Press Enter..." href="{% url 'basic_info_form' %}"
+                onsubmit="displaySearchResults()" />
+              <button class="btn btn-outline-secondary" type="submit" id="submit" style="color: #fff" hidden>
+                <i class="fa-brands fa-searchengin"></i>
+              </button>
+            </form>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'add_faculty' %}" style="color: #fff">
+              Add Faculty
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'download_excel' %}" style="color: #fff">
+              Export Excel
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'query_data' %}" style="color: #fff">
+              Filter Data
+            </a>
+          </li>
+          {% endif %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'password_reset_initiator' %}" style="color: #fff">
+              Change Password
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'download_profile' faculty_data.faculty_id %}" style="color: #fff">
+              Download
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'logout' %}" style="color: #fff">
+              Logout
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Messages -->
+  {% if messages %}
+  <div class="messages">
+    {% for message in messages %}
+    <div class="message" data-message-id="{{ forloop.counter }}">
+      <span {% if message.tags %} class="{{ message.tags }}" {% endif %}>
+        {{ message }}
+      </span>
+      <span onclick="deleteMessage({{ forloop.counter }})" style="padding: 10px; cursor: pointer">
+        <i class="fa-solid fa-square-xmark"></i>
+      </span>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Content -->
+  <div class="container mt-5">
+    <h1 class="mb-4">Greetings! {{ faculty_data.name }}</h1>
+    <div class="shadow p-3 mb-5 bg-white rounded">
+      <div class="container" style="
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            align-items: center;
+            justify-items: flex-start;
+          ">
+        <div class="mb-3">
+          <img src="https://sves.org.in/Ecap/employeephotos/{{faculty_data.faculty_id}}.jpg"
+            alt="{{ faculty_data.name }} Image" class="img-fluid" width="150rem" />
+        </div>
+
+        <div class="me-5">
+          <p>ID: {{ faculty_data.faculty_id }}</p>
+          <p>Name: {{ faculty_data.name }}</p>
+          <p>Position: {{ faculty_data.position }}</p>
+          <p>Department: {{ faculty_data.department }}</p>
+        </div>
+        <div class="mb-3">
+          <p>
+            Contact Number:
+            <a href="tel:+91{{faculty_data.contactNumber}}">
+              {{ faculty_data.contactNumber }}
+            </a>
+          </p>
+          <p>
+            Email:
+            <a href="mailto:{{ faculty_data.email }}">
+              {{ faculty_data.email }}
+            </a>
+          </p>
+          <p>Date of Joining: {{ faculty_data.date_of_joining }}</p>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- responsibilities -->
+    <div class="shadow p-3 mb-5 bg-white rounded" style="background-color: #eaeaea">
+      <h3 class="mt-3">Responsibilities</h3>
+      {% if faculty_data %}
+
+      <div class="" style="
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: space-around;
+          align-items: center;
+          justify-items: flex-start;
+        ">
+        <div class="mb-3">
+          <h4>Department Level Responsibilities: </h4>
+          <div>{{ faculty_data.department_level | linebreaksbr }}
+          </div>
+        </div>
+        <div class="mb-3">
+          <h4>College Level Responsibilities: </h4>
+          <div>{{ faculty_data.college_level }}</div>
+        </div>
+      </div>
+      {% else %}
+      <p>No Courses data available yet! Add using below button...</p>
+      {% endif %}
+      <div class="text-end">
+        <a href="{% url 'responsibilities' %}" class="btn btn-primary">Add or Update</a>
+      </div>
+    </div>
+
+    <!-- Courses -->
+    <div class="shadow p-3 mb-5 bg-white rounded" style="background-color: #eaeaea">
+      <h3 class="mt-3">Course Details</h3>
+      {% if courses_data %}
+      <div class="table-responsive">
+        <table id="dataTable" class="table border">
+          <!-- Add Bootstrap table class -->
+          <thead>
+            <tr>
+              <th rowspan="2">Academic Year</th>
+              <th rowspan="2">Name Of The Course</th>
+              <th rowspan="2">Course Code</th>
+              <th colspan="2">No.Of Hours</th>
+              <th colspan="2">ECAP Feedback</th>
+              <th rowspan="2">Pass % in SEM External Exams</th>
+            </tr>
+            <tr>
+              <th>Lecture</th>
+              <th>Tutorial</th>
+              <th>Phase 1</th>
+              <th>Phase 2</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for record in courses_data %}
+            <tr>
+              <td>{{record.academic_year}}</td>
+              <td>{{record.title_of_course}}</td>
+              <td>{{record.course_code}}</td>
+              <td>{{record.lecture}}</td>
+              <td>{{record.tutorial}}</td>
+              <td>{{record.phase_1}}</td>
+              <td>{{record.phase_2}}</td>
+              <td>{{record.pass_percentage}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p>No Courses data available yet! Add using below button...</p>
+      {% endif %}
+      <div class="text-end">
+        <a href="{% url 'course_details_form' %}" class="btn btn-primary">Add or Update</a>
+      </div>
+    </div>
+
+    <!-- Certifications -->
+    <div class="shadow p-3 mb-5 bg-white rounded" style="background-color: #eaeaea">
+      <h3 class="mt-3">Certifications</h3>
+      {% if certifications_data %}
+      <div class="table-responsive">
+        <table class="table table-hover" border="1">
+          <thead>
+            <tr>
+              <th>Academic Year</th>
+              <th>Name Of The Certification</th>
+              <th>Certification Authority</th>
+              <th>Date Of Issue</th>
+              <th>URL Of The Certificate</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for record in certifications_data %}
+            <tr>
+              <td>{{record.academic_year}}</td>
+              <td>{{record.name_of_certification}}</td>
+              <td>{{record.certification_authority}}</td>
+              <td>{{record.date}}</td>
+              <td>{{record.url}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p>No data available.</p>
+      {% endif %}
+      <div class="text-end">
+        <a href="{% url 'certifications_form' %}" class="btn btn-primary">Add or Update</a>
+      </div>
+    </div>
+
+    <!-- Conferences -->
+    <div class="shadow p-3 mb-5 bg-white rounded">
+      <h3 class="mt-3">Conferences</h3>
+      {% if conferences_data %}
+      <div class="table-responsive">
+        <table class="table table-hover" border="1">
+          <thead>
+            <tr>
+              <th>Academic Year</th>
+              <th>Name Of The Conference</th>
+              <th>Name Of The Paper Published</th>
+              <th>Conference Started On</th>
+              <th>Conference Ended On</th>
+              <th>URL Of The Certificate</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for record in conferences_data %}
+            <tr>
+              <td>{{record.academic_year}}</td>
+              <td>{{record.name_of_conference_attended}}</td>
+              <td>{{record.paper_entitled}}</td>
+              <td>{{record.from_date}}</td>
+              <td>{{record.to_date}}</td>
+              <td>{{record.url}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p>No data available.</p>
+      {% endif %}
+
+      <div class="text-end">
+        <a href="{% url 'conferences_form' %}" class="btn btn-primary">Add or Update</a>
+      </div>
+    </div>
+
+    <!-- Books -->
+    <div class="shadow p-3 mb-5 bg-white rounded">
+      <h3 class="mt-3">Books</h3>
+      {% if books_data %}
+      <div class="table-responsive">
+        <table class="table table-hover" border="1">
+          <thead>
+            <tr>
+              <th>Academic Year</th>
+              <th>Title Of Book</th>
+              <th>ISSBN</th>
+              <th>Date Published</th>
+              <th>URL Of The Book</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for record in books_data %}
+            <tr>
+              <td>{{record.academic_year}}</td>
+              <td>{{record.title_of_book}}</td>
+              <td>{{record.issbn}}</td>
+              <td>{{record.date_published}}</td>
+              <td>{{record.doi_link}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p>No data available.</p>
+      {% endif %}
+
+      <div class="text-end">
+        <a href="{% url 'books_form' %}" class="btn btn-primary">Add or Update</a>
+      </div>
+    </div>
+
+    <!-- Journals -->
+    <div class="shadow p-3 mb-5 bg-white rounded">
+      <h3 class="mt-3">Journals</h3>
+      {% if journals_data %}
+      <div class="table-responsive">
+        <table class="table table-hover" border="1">
+          <thead>
+            <tr>
+              <th>Academic Year</th>
+              <th>Title Of The Publication</th>
+              <th>Name of the Journal</th>
+              <th>Date Of Publication</th>
+              <th>URL Of The DOI</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for record in journals_data %}
+            <tr>
+              <td>{{record.academic_year}}</td>
+              <td>{{record.title_of_publication}}</td>
+              <td>{{record.name_of_journal}}</td>
+              <td>{{record.date_published}}</td>
+              <td>{{record.doi_link}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p>No data available.</p>
+      {% endif %}
+      <div class="text-end">
+        <a href="{% url 'journals_form' %}" class="btn btn-primary">Add or Update</a>
+      </div>
+    </div>
+
+    <!-- Patents -->
+    <div class="shadow p-3 mb-5 bg-white rounded">
+      <h3 class="mt-3">Patents</h3>
+      {% if patents_data %}
+      <table class="table table-hover" border="1">
+        <thead>
+          <tr>
+            <th>Academic Year</th>
+            <th>Title Of The Innovation</th>
+            <th>Application Number</th>
+            <th>Date</th>
+            <th>URL Of The Certificate</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for record in patents_data %}
+          <tr>
+            <td>{{record.academic_year}}</td>
+            <td>{{record.title_of_innovation}}</td>
+            <td>{{record.name_of_journal}}</td>
+            <td>{{record.date}}</td>
+            <td>{{record.url}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p>No data available.</p>
+      {% endif %}
+      <div class="text-end">
+        <a href="{% url 'patents_form' %}" class="btn btn-primary">Add or Update</a>
+      </div>
+    </div>
+
+    <!-- Guest Lectures -->
+    <div class="shadow p-3 mb-5 bg-white rounded">
+      <h3 class="mt-3">Guest Lectures</h3>
+      {% if guest_lectures_data %}
+      <div class="table-responsive">
+        <table class="table table-hover" border="1">
+          <thead>
+            <tr>
+              
+              <th>Academic Year</th>
+              <th>Name Of The Guest Lecture</th>
+              <th>Name Of The Host Institute</th>
+              <th>Stared On</th>
+              <th>Ended On</th>
+              <th>Duration</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for record in guest_lectures_data %}
+            <tr>
+              <td>{{record.academic_year}}</td>
+              <td>{{record.name_of_the_guest_lecture}}</td>
+              <td>{{record.name_of_the_host_institute}}</td>
+              <td>{{record.from_date}}</td>
+              <td>{{record.to_date}}</td>
+              <td>{{record.duration}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p>No data available.</p>
+      {% endif %}
+      <div class="text-end">
+        <a href="{% url 'guest_lecture_form' %}" class="btn btn-primary">Add or Update</a>
+      </div>
+    </div>
+
+    <!-- FDP -->
+    <div class="shadow p-3 mb-5 bg-white rounded">
+      <h3 class="mt-3">Faculty Development Programmes</h3>
+      {% if fdps_data %}
+      <div class="table-responsive">
+        <table class="table table-hover" border="1">
+          <thead>
+            <tr>
+              <th>Academic Year</th>
+              <th>Name Of The FDP</th>
+              <th>Host Institute Name</th>
+              <th>Started On</th>
+              <th>Ended On</th>
+              <th>Duration</th>
+              <th>Organized/Attended</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for record in fdps_data %}
+            <tr>
+              <td>{{record.academic_year}}</td>
+              <td>{{record.name_of_the_fdp}}</td>
+              <td>{{record.name_of_the_institute}}</td>
+              <td>{{record.from_date}}</td>
+              <td>{{record.to_date}}</td>
+              <td>{{record.duration}}</td>
+              <td>
+                {% if record.fdp_organized %}
+                Organized
+                {% else %}
+                Attended
+                {%endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p>No data available.</p>
+      {% endif %}
+      <div class="text-end">
+        <a href="{% url 'fdp_form' %}" class="btn btn-primary">Add or Update</a>
+      </div>
+    </div>
+
+    <!-- Workshops -->
+    <div class="shadow p-3 mb-5 bg-white rounded">
+      <h3 class="mt-3">Workshops</h3>
+      {% if workshops_data %}
+      <div class="table-responsive">
+        <table class="table table-hover" border="1">
+          <thead>
+            <tr>
+              <th>Academic Year</th>
+              <th>Name Of The Workshop</th>
+              <th>Host Institute Name</th>
+              <th>Started On</th>
+              <th>Ended On</th>
+              <th>Duration</th>
+              <th>Organized/Attended</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for record in workshops_data %}
+            <tr>
+              <td>{{record.academic_year}}</td>
+              <td>{{record.name_of_the_workshop}}</td>
+              <td>{{record.name_of_the_institute}}</td>
+              <td>{{record.from_date}}</td>
+              <td>{{record.to_date}}</td>
+              <td>{{record.duration}}</td>
+              <td>
+                {% if record.workshop_organized %}
+                Organized
+                {% else %}
+                Attended
+                {%endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p>No data available.</p>
+      {% endif %}
+      <div class="text-end">
+        <a href="{% url 'workshop_form' %}" class="btn btn-primary">Add or Update</a>
+      </div>
+    </div>
+
+    <!-- Conference Chair -->
+    <div class="shadow p-3 mb-5 bg-white rounded">
+      <h3 class="mt-3">Conference Chair</h3>
+      {% if conference_chairs_data %}
+      <div class="table-responsive">
+        <table class="table table-hover" border="1">
+          <thead>
+            <tr>
+              <th>Academic Year</th>
+              <th>Name Of The Conference</th>
+              <th>Duration</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for record in conference_chairs_data %}
+            <tr>
+              <td>{{record.academic_year}}</td>
+              <td>{{record.title_of_the_conference}}</td>
+              <td>{{record.duration}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p>No data available.</p>
+      {% endif %}
+      <div class="text-end">
+        <a href="{% url 'conference_chair_form' %}" class="btn btn-primary">Add or Update</a>
+      </div>
+    </div>
+
+    <!-- Department Summary -->
+    {% if summary_data %}
+    <div class="shadow p-3 mb-5 bg-white rounded">
+      <h3 class="mt-3">Department Summary</h3>
+      <div class="table-responsive">
+        <table class="table table-hover" border="1">
+          <thead>
+            <tr>
+              <th>Faculty ID</th>
+              <th>Course Records</th>
+              <th>Certifications</th>
+              <th>Conferences</th>
+              <th>Journals</th>
+              <th>Books</th>
+              <th>Patents</th>
+              <th>Guest Lectures</th>
+              <th>FDPs</th>
+              <th>Workshops</th>
+              <th>Conference Chair</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for record in summary_data.0 %}
+            <tr>
+              {% for value in record %}
+              {% if forloop.counter == 1 %}
+              <td class="{% if value %} text-primary {% else %} text-danger {% endif %}" title="{{value.1}}">
+                <a href="{% url 'profile_viewer' value.0 %}" target="_blank">{{value.0}}</a>
+              </td>
+              {% else %}
+              <td class="{% if value %} text-primary {% else %} text-danger {% endif %}">
+                {{value}}
+              </td>
+              {% endif %}
+              {% endfor %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  <div class="footer text-center">
+    <p>
+      &copy; {%now 'Y'%} Faculty Vault. All rights reserved. | Powered by <a href="http://srivasaviengg.ac.in/">Sri
+        Vasavi Engineering College</a>
+    </p>
+  </div>
+
+  <script>
+    function deleteMessage(messageId) {
+      var messageElement = document.querySelector(
+        '.message[data-message-id="' + messageId + '"]'
+      );
+      if (messageElement) {
+        messageElement.remove();
+      }
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+    crossorigin="anonymous"></script>
+  <script src="https://kit.fontawesome.com/83ce78bbab.js" crossorigin="anonymous"></script>
+</body>
+
+</html>
