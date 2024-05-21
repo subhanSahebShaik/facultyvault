@@ -1,4 +1,3 @@
-```markdown
 # FacultyVault
 
 FacultyVault is a user-friendly and efficient faculty management system designed to manage and organize faculty data seamlessly. The system includes functionality to handle various aspects of faculty management and aims to streamline processes within educational institutions.
@@ -79,4 +78,4 @@ From the main interface, you can add new faculty members, edit existing profiles
 ## Contact
 
 For any questions or suggestions, please contact us at shaiksubhansaheb609@gmail.com.
-```
+
