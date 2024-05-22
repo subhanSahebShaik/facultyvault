@@ -77,5 +77,4 @@ From the main interface, you can add new faculty members, edit existing profiles
 
 ## Contact
 
-For any questions or suggestions, please contact us at shaiksubhansaheb609@gmail.com.
-
+For any questions or suggestions, please contact us at shaiksubhansaheb609@gmail.com
